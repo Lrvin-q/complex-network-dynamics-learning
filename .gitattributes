@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+# Preserve the exact source bytes checked by paper/metrics_manifest.json.
+*.json -text
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.npz binary
+*.cmd text eol=crlf

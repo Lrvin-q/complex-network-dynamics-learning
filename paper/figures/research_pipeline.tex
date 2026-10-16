@@ -1,0 +1,31 @@
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=12mm,
+              text width=37mm, inner sep=3pt},
+  task/.style={box,text width=29mm},
+  arrow/.style={-{Latex[length=2.5mm]}, thick}
+]
+\node[box,fill=blue!8] (obs) at (-6.8,0)
+  {观测数据\\各组分状态时间序列};
+
+\node[task,fill=teal!9] (known) at (-2.4,1.35)
+  {网络已知\\学习演化规律};
+\node[box,fill=green!9] (knownmethod) at (1.7,1.35)
+  {分离表示自身演化\\与邻居交互作用};
+\node[box,fill=purple!8] (knownout) at (6.3,1.35)
+  {一步预测与多步推演\\规律与参数诊断};
+
+\node[task,fill=orange!10] (unknown) at (-2.4,-1.35)
+  {网络未知\\规律与结构共学};
+\node[box,fill=red!7] (unknownmethod) at (1.7,-1.35)
+  {交替学习离散连接\\并抑制结构补偿};
+\node[box,fill=purple!8] (unknownout) at (6.3,-1.35)
+  {动力学预测\\与潜在拓扑恢复};
+
+\draw[arrow] (obs.east) -- ++(0.7,0) |- (known.west);
+\draw[arrow] (obs.east) -- ++(0.7,0) |- (unknown.west);
+\draw[arrow] (known) -- (knownmethod);
+\draw[arrow] (knownmethod) -- (knownout);
+\draw[arrow] (unknown) -- (unknownmethod);
+\draw[arrow] (unknownmethod) -- (unknownout);
+\end{tikzpicture}

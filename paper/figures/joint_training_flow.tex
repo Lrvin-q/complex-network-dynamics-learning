@@ -1,0 +1,25 @@
+\begin{tikzpicture}[
+  font=\small,
+  node distance=8mm and 10mm,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=11mm, text width=32mm},
+  arrow/.style={-{Latex[length=2.3mm]}, thick},
+  grad/.style={-{Latex[length=2.3mm]}, thick, dashed, red!75!black}
+]
+\node[box,fill=gray!8] (data) {分层无放回采样\\状态转移对 $(\mathbf X_t,\mathbf X_{t+1})$};
+\node[box,fill=purple!8,right=of data] (gen) {网络生成器\\对数几率 $R$ 与 Gumbel 噪声};
+\node[box,fill=orange!10,right=of gen,yshift=9mm] (hard) {硬图\\$\hat A_{\rm hard}=\mathbb 1[R+G>0]$};
+\node[box,fill=blue!8,right=of hard] (learner) {动力学学习器阶段\\固定硬图，更新学习器};
+\node[box,fill=orange!10,right=of gen,yshift=-9mm] (soft) {软图\\$\hat A_{\rm soft}=\sigma((R+G)/\tau)$};
+\node[box,fill=green!9,right=of soft] (generator) {生成器阶段\\冻结学习器，更新 $R$};
+\node[box,fill=red!7,right=15mm of learner,yshift=-9mm] (loss) {逐节点交叉熵\\+ 熵正则};
+\draw[arrow] (data) -- (gen);
+\draw[arrow] (gen) -- (hard);
+\draw[arrow] (gen) -- (soft);
+\draw[arrow] (hard) -- (learner);
+\draw[arrow] (soft) -- (generator);
+\draw[arrow] (learner) -- (loss);
+\draw[arrow] (generator) -- (loss);
+\draw[grad] (loss.south) -- ++(0,-16mm) -|
+  node[pos=0.26,below,font=\footnotesize]{仅生成器阶段将梯度传回 $R$}
+  (gen.south);
+\end{tikzpicture}

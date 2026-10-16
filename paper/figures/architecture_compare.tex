@@ -1,0 +1,46 @@
+\begin{tikzpicture}[
+  font=\small,
+  input/.style={draw, rounded corners=2pt, align=center, minimum height=9mm,
+                text width=13mm, fill=gray!7, inner sep=2pt},
+  op/.style={draw, rounded corners=2pt, align=center, minimum height=10mm,
+             text width=23mm, inner sep=2pt},
+  merge/.style={draw, rounded corners=2pt, align=center, minimum height=12mm,
+                text width=21mm, inner sep=2pt},
+  read/.style={draw, rounded corners=2pt, align=center, minimum height=10mm,
+               text width=17mm, fill=gray!8, inner sep=2pt},
+  arrow/.style={-{Latex[length=2.1mm]}, thick}
+]
+% Panel (a): GraphConv additive fusion.
+\node[font=\bfseries,anchor=west] at (-6.20,1.45) {(a) GraphConv 加法融合基线};
+\node[input] (xi) at (-5.60,0.55) {$\mathbf x_i$};
+\node[input] (xj) at (-5.60,-0.55) {$\{\mathbf x_j\}$};
+\node[op,fill=blue!8] (self) at (-3.30,0.55) {自身变换\\$W_{\rm self}\mathbf x_i$};
+\node[op,fill=orange!10] (neigh) at (-3.30,-0.55) {邻居变换\\$W_{\rm neigh}\sum_j\mathbf x_j$};
+\node[merge,fill=purple!9] (add) at (-0.50,0) {逐元素相加\\$\sigma(\mathbf a+\mathbf b)$};
+\node[read] (readout) at (1.80,0) {共享\\读出层};
+\draw[arrow] (xi) -- (self);
+\draw[arrow] (xj) -- (neigh);
+\draw[arrow] (self) -- (add);
+\draw[arrow] (neigh) -- (add);
+\draw[arrow] (add) -- (readout);
+\node[align=left,text width=50mm,font=\footnotesize] at (5.20,0)
+  {自身项与邻居项分别变换，但在中间层相加；高度数节点可能引入量级失衡与表示干扰。};
+
+% Panel (b): two-channel representation.
+\begin{scope}[yshift=-3.30cm]
+\node[font=\bfseries,anchor=west] at (-6.20,1.45) {(b) 自身--邻居双通道};
+\node[input] (xi2) at (-5.60,0.55) {$\mathbf x_i$};
+\node[input] (xj2) at (-5.60,-0.55) {$\{\mathbf x_j\}$};
+\node[op,fill=blue!8] (self2) at (-3.30,0.55) {自身通道\\$f_{\rm self}(\mathbf x_i)$};
+\node[op,fill=orange!10] (neigh2) at (-3.30,-0.55) {邻居通道\\$\sum_j f_{\rm neigh}(\mathbf x_j)$};
+\node[merge,fill=green!9] (cat) at (-0.50,0) {表示拼接\\$[\mathbf h_i^{\rm self};\mathbf h_i^{\rm neigh}]$};
+\node[read] (readout2) at (1.80,0) {非线性\\读出层};
+\draw[arrow] (xi2) -- (self2);
+\draw[arrow] (xj2) -- (neigh2);
+\draw[arrow] (self2) -- (cat);
+\draw[arrow] (neigh2) -- (cat);
+\draw[arrow] (cat) -- (readout2);
+\node[align=left,text width=50mm,font=\footnotesize] at (5.20,0)
+  {两类信息在读出前保持分离；邻居通道采用求和，以保留局部交互的累积强度。};
+\end{scope}
+\end{tikzpicture}

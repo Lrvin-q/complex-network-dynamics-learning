@@ -1,0 +1,97 @@
+% !TEX program = xelatex
+\documentclass[UTF8,12pt,a4paper,scheme=chinese,fontset=windows]{ctexart}
+
+\usepackage[a4paper,left=2.6cm,right=2.4cm,top=2.5cm,bottom=2.5cm,headheight=15pt]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs,threeparttable,tabularx,longtable,array,multirow}
+\usepackage{caption,subcaption,float,placeins,pdflscape}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\usepackage[nopatch=footnote]{microtype}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage[capitalise,noabbrev]{cleveref}
+\usepackage[backend=biber,style=gb7714-2015,sorting=none,doi=true,url=true]{biblatex}
+\addbibresource{references.bib}
+
+\setmainfont{Times New Roman}
+\setmonofont{Consolas}
+\linespread{1.34}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0.15em}
+\setlist{itemsep=0.2em,topsep=0.35em}
+\captionsetup{font=small,labelsep=quad,justification=centering}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+\graphicspath{{figures/}{../two_channel_experiment/results/phase4/}{../two_channel_experiment/results/phase6/}}
+
+\definecolor{linkblue}{RGB}{0,0,255}
+\hypersetup{
+  colorlinks=true,
+  allcolors=linkblue,
+  linktoc=all,
+  linkcolor=linkblue,
+  citecolor=linkblue,
+  urlcolor=linkblue,
+  pdftitle={复杂网络动力学学习与拓扑重构：从观测时间序列到演化规律与潜在连接},
+  pdfauthor={Lrvin-q}
+}
+
+\ctexset{
+  section={format=\yahei\zihao{-3},beforeskip=1.0ex,afterskip=0.7ex},
+  subsection={format=\yahei\zihao{4},beforeskip=0.8ex,afterskip=0.5ex},
+  subsubsection={format=\yahei\zihao{-4},beforeskip=0.6ex,afterskip=0.35ex}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\small 复杂网络动力学学习与拓扑重构}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{firstpage}{%
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\ind}{\mathbf{1}}
+\newcommand{\vect}[1]{\bm{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\paperdate}{2026 年 9 月}
+\crefname{figure}{图}{图}
+\crefname{table}{表}{表}
+\crefname{equation}{式}{式}
+
+\begin{document}
+
+\thispagestyle{firstpage}
+\input{sections/00_title_abstract}
+\clearpage
+\tableofcontents
+\clearpage
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_problem_protocol}
+\input{sections/04_known_topology}
+\input{sections/05_unknown_topology}
+\input{sections/06_results}
+\input{sections/07_discussion}
+\input{sections/08_conclusion}
+
+\clearpage
+\printbibliography[title={参考文献}]
+
+\clearpage
+\appendix
+\input{sections/09_appendix}
+
+\end{document}

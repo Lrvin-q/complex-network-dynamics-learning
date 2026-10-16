@@ -1,0 +1,103 @@
+% !TEX root = ../main.tex
+\section{问题定义与实验设计}
+
+\subsection{一般网络动力学问题}
+
+设复杂系统包含 $N$ 个可观测组分，连接关系由邻接矩阵 $A$ 描述，全部组分在时刻 $t$ 的状态记为 $\mathbf X(t)=[\mathbf x_1(t),\ldots,\mathbf x_N(t)]$。
+离散时间网络动力学可以一般地写为
+\begin{equation}
+\mathbf X(t+1)=\mathcal F_{\theta}\!\left(\mathbf X(t),A\right)+\boldsymbol\varepsilon(t),
+\label{eq:network-dynamics}
+\end{equation}
+其中 $\mathcal F_{\theta}$ 表示未知或部分未知的演化规律，$\boldsymbol\varepsilon$ 概括过程随机性与观测误差。
+若相互作用具有局部性和共享性，
+节点更新还可写成
+\begin{equation}
+\mathbf x_i(t+1)\sim
+f_{\theta}\!\left(
+\mathbf x_i(t),+\operatorname{Agg}_{j:A_{ij}=1}
+g_{\theta}(\mathbf x_i(t),\mathbf x_j(t))
+\right).
+\label{eq:local-interaction}
+\end{equation}
+这一表达将影响节点下一状态的因素分为两类：节点自身当前状态，以及由网络传入的邻居作用。
+本文的方法围绕这一区分展开，而不要求 $f_{\theta}$ 具有某个特定动力学的解析形式。
+
+据此定义两个递进任务。
+网络已知时，给定 $A$ 和连续观测到的状态转移对，学习 $f_{\theta}$，并检验模型能否在未显式写入方程的情况下恢复正确的局部响应。
+网络未知时，
+只给出状态序列，
+同时估计动力学参数 $\theta$ 与潜在邻接矩阵 $\hat A$。
+第二项任务不仅要求预测准确，
+还要求输出的连接能够在边级评价中接近真实网络。
+
+\subsection{网络 SIR 动力学}
+
+本文用离散时间网络 SIR 过程具体化\cref{eq:network-dynamics}。
+在无向无自环网络上，节点 $i$ 的状态 $s_i(t)\in\{S,I,R\}$ 分别表示易感、感染和康复。
+感染节点以概率 $\gamma$ 康复；
+易感节点受到其感染邻居的独立影响。
+时刻 $t$ 的感染者邻居数为
+\begin{equation}
+k_i(t)=\sum_j A_{ij}\,\mathbf{1}[s_j(t)=I],
+\end{equation}
+其中，$\mathbf{1}[\cdot]$ 为示性函数：方括号内的条件成立时取 1，否则取 0。
+因此，$\mathbf{1}[s_j(t)=I]$ 仅在节点 $j$ 处于感染态时取 1，
+与邻接矩阵元素 $A_{ij}$ 相乘并求和后，即得到节点 $i$ 的感染者邻居数。
+相应的一步感染概率为
+\begin{equation}
+P(S\to I\mid k_i)=1-(1-\beta)^{k_i},
+\label{eq:sir-infection}
+\end{equation}
+其中 $\beta$ 是单条感染边上的传播概率。
+SIR 对本文尤其合适：一方面，节点自身状态决定可发生的转移，邻居计数决定交互强度，
+与双通道思想直接对应；
+另一方面，
+\cref{eq:sir-infection}给出了可检验的真实响应曲线，
+使“预测看起来正确”与“动力学规律确实被恢复”能够被区分。
+
+\subsection{实验设计}
+
+实验使用三类具有代表性的合成网络：ER 随机网络、WS 小世界网络和 BA 无标度网络。
+每类只生成一个固定的 $N=100$ 图实例，
+统一设置 $\beta=0.3$、$\gamma=0.1$。
+对多组初始感染节点和随机传播轨迹进行模拟，
+最终得到 9000 个相邻时刻状态转移对。
+主要设置见\cref{tab:protocol}。
+
+\begin{table}[H]
+  \centering
+  \caption{SIR 验证场景的数据与评价设置}
+  \label{tab:protocol}
+  \begin{tabularx}{0.96\textwidth}{@{}lX@{}}
+    \toprule
+    项目 & 设置 \\
+    \midrule
+    网络 & ER$(N=100,p=0.1)$、WS$(N=100,k=6,p=0.2)$、BA$(N=100,m=3)$，各一个固定实例 \\
+    动力学 & 离散同步 SIR，$\beta=0.3$，$\gamma=0.1$，每条轨迹 60 个状态转移 \\
+    观测数据 & 30 次初始节点抽样，每次模拟 5 条随机轨迹，共 9000 个状态转移对 \\
+    数据划分 & 状态转移对按 $8:2$ 随机划分为训练集和验证集 \\
+    规律诊断 & 感染概率随邻居数 $k$ 的变化、$\beta$ 与 $\gamma$ 的参数反演 \\
+    多步推演 & 5 组初始条件、1--5 个初始感染者，比较 S/I/R 占比轨迹 \\
+    结构评价 & 硬图的 ACC、Precision、F1、TPR、FPR 及预测边数 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+评价遵循由“预测”到“规律”再到“结构”的层次。
+一步预测使用逐节点交叉熵与准确率；
+规律诊断比较模型给出的 $P(S\to I\mid k)$ 与理论曲线，
+并从输出曲线反演 $\hat\beta$，
+同时考察 $P(I\to R)$ 得到的 $\hat\gamma$；
+多步推演把模型输出重新作为下一步输入，
+统计群体 S/I/R 占比的平均绝对误差。
+未知网络还使用
+\begin{equation}
+\mathrm{Precision}=\frac{TP}{TP+FP},\qquad
+F_1=\frac{2\,\mathrm{Precision}\,\mathrm{TPR}}
+{\mathrm{Precision}+\mathrm{TPR}}
+\end{equation}
+评价恢复的具体边，避免仅由大量真负边造成的高 ACC 掩盖稠密错误图。
+
+多次训练采用同一图和同一数据上的不同优化初始化。
+具体训练配置、结果文件与指标计算方式统一列于附录。
